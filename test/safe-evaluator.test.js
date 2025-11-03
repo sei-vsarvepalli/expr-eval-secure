@@ -247,8 +247,9 @@ describe('Safe Evaluator', function () {
       assert.strictEqual(evaluate('x', { x: false }), false);
     });
 
-    it('should handle string concatenation with ||', function () {
-      assert.strictEqual(evaluate('x || y', { x: 'hello', y: 'world' }), 'helloworld');
+    it('should handle logical OR with booleans', function () {
+      assert.strictEqual(evaluate('x or y', { x: false, y: true }), true);
+      assert.strictEqual(evaluate('x or y', { x: true, y: false }), true);
     });
   });
 });
