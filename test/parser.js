@@ -234,7 +234,7 @@ describe('Parser', function () {
         assert.strictEqual(parser.parse('sin;').toString(), '(sin)');
         assert.strictEqual(parser.parse('(sin)').toString(), 'sin');
         assert.strictEqual(parser.parse('sin; (2)^3').toString(), '(sin;(2 ^ 3))');
-/*         assert.deepStrictEqual(parser.parse('f(sin, sqrt)').evaluate({ f: function (a, b) { return [ a, b ]; }}), [ Math.sin, Math.sqrt ]); */
+        assert.deepStrictEqual((function() { parser.functions.f = function (a, b) { return [ a, b ]; }; return parser.parse('f(sin, sqrt)').evaluate();})(), [ Math.sin, Math.sqrt ]);
         assert.strictEqual(parser.parse('sin').evaluate(), Math.sin);
         assert.strictEqual(parser.parse('cos;').evaluate(), Math.cos);
         assert.strictEqual(parser.parse('cos;tan').evaluate(), Math.tan);
