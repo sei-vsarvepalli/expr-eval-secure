@@ -67,6 +67,16 @@ export default function evaluate(tokens, expr, values) {
         args.unshift(resolveExpression(nstack.pop(), values));
       }
       f = nstack.pop();
+			var isAllowedFunc = false;
+			for (var key in expr.functions) {
+				if (expr.functions[key] === f) {
+					isAllowedFunction = true;
+					break;
+				}
+			}
+			if (!isAllowedFunc) {
+				throw new Error('Is not an allowed function.')
+			}
       if (f.apply && f.call) {
         nstack.push(f.apply(undefined, args));
       } else {
