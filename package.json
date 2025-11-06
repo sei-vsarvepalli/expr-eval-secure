@@ -1,6 +1,6 @@
 {
   "name": "expr-eval",
-  "version": "2.0.3",
+  "version": "3.0.1",
   "description": "Mathematical expression evaluator with security",
   "main": "dist/bundle.js",
   "module": "dist/index.mjs",
