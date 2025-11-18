@@ -158,7 +158,6 @@ export default function evaluate(tokens, expr, values) {
 	}
 	if(typeof(n1) === "object" && (typeof(n1[item.value]) === "function")
 	   && (!isAllowedFunc(n1[item.value]))) {
-	    console.log(n1[item.value]);
 	    throw new Error('Is not an allowed function in MEMBER.');
 	}
       nstack.push(n1[item.value]);
