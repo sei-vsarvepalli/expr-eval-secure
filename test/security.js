@@ -47,3 +47,18 @@ it('PoC provided by researcher VU#263614 deny child exec process', function() {
 	parser.evaluate('exec("whoami")', context);
     }, Error);
 });
+it('PoC provided by researcher https://github.com/silentmatt/expr-eval/issues/289 by gitHub @baoquanh', function() { 
+   var context = {
+       write: (path, data) => fs.writeFileSync(path, data),
+       cmd: (cmd) => console.log('Executing:', cmd),
+       exec: child_process.execSync
+   };
+
+   var baoquanh = {
+       test: context
+   }
+   var parser = new Parser();
+   assert.throws(() => {
+       parser.evaluate('test.write("pwned.txt","Hello!")', baoquanh)
+   }, Error);
+})
