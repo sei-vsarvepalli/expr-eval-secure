@@ -14,11 +14,11 @@ export default function evaluate(tokens, expr, values) {
    * This logic is the core security allowance gate.
    */
   var isAllowedFunc = function (f) {
-      if (typeof f !== 'function') return 1;
+      if (typeof f !== 'function') return true;
       for (var key in expr.functions) {
-          if (expr.functions[key] === f) return 2;
+          if (expr.functions[key] === f) return true;
       }
-      if (f.__expr_eval_safe_def) return 4;
+      if (f.__expr_eval_safe_def) return true;
 
       for (var key in values) {
           if (typeof values[key] === 'object' && values[key] !== null) {
@@ -26,16 +26,16 @@ export default function evaluate(tokens, expr, values) {
                   if (values[key][subKey] === f) {
 		      const tf = values[key][subKey];
 		      for (var key in expr.functions) {
-			  if (expr.functions[key] === tf) return 5;
+			  if (expr.functions[key] === tf) return true;
 		      }
 		      for (var key of Object.getOwnPropertyNames(Math)) {
-			  if(Math[key] === tf) return 6;
+			  if(Math[key] === tf) return true;
 		      }
 		  }
               }
           }
       }
-      return 0;
+      return false;
   };
   /* --- END: LOCAL HELPER FUNCTION FOR SECURITY --- */
 
@@ -135,9 +135,6 @@ export default function evaluate(tokens, expr, values) {
           value: n1,
           writable: false
         });
-	  if (f.__expr_eval_safe_def) {
-	      throw new Error("User self-defined safe definition found");
-	  }
         // *** MARK AS SAFE FOR SECURITY CHECK ***
         Object.defineProperty(f, '__expr_eval_safe_def', {
             value: true,
