@@ -14,22 +14,29 @@ export default function evaluate(tokens, expr, values) {
    * This logic is the core security allowance gate.
    */
   var isAllowedFunc = function (f) {
-      if (typeof f !== 'function') return true;
+      if (typeof f !== 'function') return 1;
 
       for (var key in expr.functions) {
-          if (expr.functions[key] === f) return true;
+          if (expr.functions[key] === f) return 2;
       }
 
-      if (f.__expr_eval_safe_def) return true;
+      if (f.__expr_eval_safe_def) return 3;
 
       for (var key in values) {
           if (typeof values[key] === 'object' && values[key] !== null) {
               for (var subKey in values[key]) {
-                  if (values[key][subKey] === f) return true;
+		  console.log(f,values);
+                  if (values[key][subKey] === f) {
+		      const tf = values[key][subKey];
+		      for (var key in expr.functions) {
+			  if (expr.functions[key] === tf) return 4;
+		      }
+		  }
               }
           }
       }
-      return false;
+
+      return 0;
   };
   /* --- END: LOCAL HELPER FUNCTION FOR SECURITY --- */
 
@@ -143,7 +150,17 @@ export default function evaluate(tokens, expr, values) {
     } else if (type === IEXPREVAL) {
       nstack.push(item);
     } else if (type === IMEMBER) {
-      n1 = nstack.pop();
+	n1 = nstack.pop();
+	if (/^__proto__|prototype|constructor$/.test(item.value)) {
+	    throw new Error('prototype access detected in MEMBER');
+	}
+	console.log(typeof(n1[item.value]));
+	console.log(isAllowedFunc(n1[item.value]));
+	if(typeof(n1) === "object" && (typeof(n1[item.value]) === "function")
+	   && (!isAllowedFunc(n1[item.value]))) {
+	    console.log(n1[item.value]);
+	    throw new Error('Is not an allowed function in MEMBER.');
+	}
       nstack.push(n1[item.value]);
     } else if (type === IENDSTATEMENT) {
       nstack.pop();
