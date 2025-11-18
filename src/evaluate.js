@@ -15,27 +15,26 @@ export default function evaluate(tokens, expr, values) {
    */
   var isAllowedFunc = function (f) {
       if (typeof f !== 'function') return 1;
-
       for (var key in expr.functions) {
           if (expr.functions[key] === f) return 2;
       }
-
-      if (f.__expr_eval_safe_def) return 3;
+      if (f.__expr_eval_safe_def) return 4;
 
       for (var key in values) {
           if (typeof values[key] === 'object' && values[key] !== null) {
               for (var subKey in values[key]) {
-		  console.log(f,values);
                   if (values[key][subKey] === f) {
 		      const tf = values[key][subKey];
 		      for (var key in expr.functions) {
-			  if (expr.functions[key] === tf) return 4;
+			  if (expr.functions[key] === tf) return 5;
+		      }
+		      for (var key of Object.getOwnPropertyNames(Math)) {
+			  if(Math[key] === tf) return 6;
 		      }
 		  }
               }
           }
       }
-
       return 0;
   };
   /* --- END: LOCAL HELPER FUNCTION FOR SECURITY --- */
@@ -136,6 +135,9 @@ export default function evaluate(tokens, expr, values) {
           value: n1,
           writable: false
         });
+	  if (f.__expr_eval_safe_def) {
+	      throw new Error("User self-defined safe definition found");
+	  }
         // *** MARK AS SAFE FOR SECURITY CHECK ***
         Object.defineProperty(f, '__expr_eval_safe_def', {
             value: true,
@@ -154,8 +156,6 @@ export default function evaluate(tokens, expr, values) {
 	if (/^__proto__|prototype|constructor$/.test(item.value)) {
 	    throw new Error('prototype access detected in MEMBER');
 	}
-	console.log(typeof(n1[item.value]));
-	console.log(isAllowedFunc(n1[item.value]));
 	if(typeof(n1) === "object" && (typeof(n1[item.value]) === "function")
 	   && (!isAllowedFunc(n1[item.value]))) {
 	    console.log(n1[item.value]);
