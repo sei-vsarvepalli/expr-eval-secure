@@ -18,7 +18,6 @@ export default function evaluate(tokens, expr, values) {
       for (var key in expr.functions) {
           if (expr.functions[key] === f) return true;
       }
-      if (f.__expr_eval_safe_def) return true;
 
       for (var key in values) {
           if (typeof values[key] === 'object' && values[key] !== null) {
@@ -82,7 +81,7 @@ export default function evaluate(tokens, expr, values) {
         var v = values[item.value];
           if (v !== undefined) {
               if (typeof v === 'function' && !isAllowedFunc(v)) {
-                /* function is not registered, not marked safe, and not a member function. BLOCKED. */
+                  /* function is not registered, not marked safe, and not a member function. BLOCKED. */
                 throw new Error('Variable references an unallowed function: ' + item.value);
             }
           nstack.push(v);
@@ -101,7 +100,6 @@ export default function evaluate(tokens, expr, values) {
         args.unshift(resolveExpression(nstack.pop(), values));
       }
 	f = nstack.pop();
-
       // --- FINAL SECURITY CHECK ---
       if (!isAllowedFunc(f)) {
           throw new Error('Is not an allowed function.');
@@ -130,16 +128,8 @@ export default function evaluate(tokens, expr, values) {
           }
           return evaluate(n2, expr, scope);
         };
-        // f.name = n1
-        Object.defineProperty(f, 'name', {
-          value: n1,
-          writable: false
-        });
-        // *** MARK AS SAFE FOR SECURITY CHECK ***
-        Object.defineProperty(f, '__expr_eval_safe_def', {
-            value: true,
-            writable: false
-        });
+          // *** MARK AS SAFE FOR SECURITY CHECK ***
+	  expr.functions[n1] = f;
         // ***************************************
         values[n1] = f;
         return f;
