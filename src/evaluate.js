@@ -129,7 +129,7 @@ export default function evaluate(tokens, expr, values) {
           return evaluate(n2, expr, scope);
         };
           // *** MARK AS SAFE FOR SECURITY CHECK ***
-	  expr.functions[n1] = f;
+	  expr.functions["lambda_" + expr.functions.__counter++] = f;
         // ***************************************
         values[n1] = f;
         return f;
