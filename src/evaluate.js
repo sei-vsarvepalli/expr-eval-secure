@@ -15,6 +15,44 @@ export default function evaluate(tokens, expr, values) {
    */
   var isAllowedFunc = function (f) {
       if (typeof f !== 'function') return true;
+      const SAFE_MATH = Object.freeze({
+	    abs: Math.abs,
+	    acos: Math.acos,
+	    asin: Math.asin,
+	    atan: Math.atan,
+	    atan2: Math.atan2,
+	    ceil: Math.ceil,
+	    clz32: Math.clz32,
+	    cos: Math.cos,
+	    exp: Math.exp,
+	    floor: Math.floor,
+	    imul: Math.imul,
+	    fround: Math.fround,
+	    f16round: Math.f16round,
+	    log: Math.log,
+	    max: Math.max,
+	    min: Math.min,
+	    pow: Math.pow,
+	    random: Math.random,
+	    round: Math.round,
+	    sin: Math.sin,
+	    sqrt: Math.sqrt,
+	    tan: Math.tan,
+	    log10: Math.log10,
+	    log2: Math.log2,
+	    log1p: Math.log1p,
+	    expm1: Math.expm1,
+	    cosh: Math.cosh,
+	    sinh: Math.sinh,
+	    tanh: Math.tanh,
+	    acosh: Math.acosh,
+	    asinh: Math.asinh,
+	    atanh: Math.atanh,
+	    hypot: Math.hypot,
+	    trunc: Math.trunc,
+	    sign: Math.sign,
+	    cbrt: Math.cbrt,
+      });
       for (var key in expr.functions) {
           if (expr.functions[key] === f) return true;
       }
@@ -27,8 +65,8 @@ export default function evaluate(tokens, expr, values) {
 		      for (var key in expr.functions) {
 			  if (expr.functions[key] === tf) return true;
 		      }
-		      for (var key of Object.getOwnPropertyNames(Math)) {
-			  if(Math[key] === tf) return true;
+		      for (var key of Object.getOwnPropertyNames(SAFE_MATH)) {
+			  if(SAFE_MATH[key] === tf) return true;
 		      }
 		  }
               }
